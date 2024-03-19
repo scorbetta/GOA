@@ -23,7 +23,6 @@ project:
     - "FIXED_POINT_ACT_FUN.v"
     - "RW_REG.v"
     - "RO_REG.v"
-    - "DELTA_REG.v"
     - "REGPOOL.v"
     - "D_FF_EN.v"
     - "PISO_BUFFER.v"

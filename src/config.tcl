@@ -83,3 +83,10 @@ set ::env(SYNTH_NO_FLAT) 0
 set ::env(SYNTH_FLAT_TOP) 1
 set ::env(CLOCK_PORT) "ui_in\\\[0\\\]"
 set ::env(BASE_SDC_FILE) "project.sdc"
+
+puts "----"
+puts [ pwd ]
+puts $script_dir
+puts $::env(DESIGN_DIR)"
+puts "----"
+

@@ -12,11 +12,11 @@
 
 # PL_TARGET_DENSITY - You can increase this if Global Placement fails with error GPL-0302.
 # Users have reported that values up to 0.8 worked well for them.
-set ::env(PL_TARGET_DENSITY) 0.6
+set ::env(PL_TARGET_DENSITY) 0.9
 
 # CLOCK_PERIOD - Increase this in case you are getting setup time violations.
 # The value is in nanoseconds, so 20ns == 50MHz.
-set ::env(CLOCK_PERIOD) "20"
+set ::env(CLOCK_PERIOD) "40"
 
 # Hold slack margin - Increase them in case you are getting hold violations.
 set ::env(PL_RESIZER_HOLD_SLACK_MARGIN) 0.1
@@ -71,8 +71,15 @@ set ::env(DECAP_CELL) "\
 
 # Clock
 set ::env(RUN_CTS) 1
-set ::env(CLOCK_PORT) {clk}
+#@SCORBETTAset ::env(CLOCK_PORT) {clk}
 
 # Don't use power rings or met5 layer
 set ::env(DESIGN_IS_CORE) 0
 set ::env(RT_MAX_LAYER) {met4}
+
+# Added by: scorbetta
+set ::env(SYNTH_STRATEGY) "AREA 0"
+set ::env(SYNTH_NO_FLAT) 0
+set ::env(SYNTH_FLAT_TOP) 1
+set ::env(CLOCK_PORT) "ui_in\\\[0\\\]"
+set ::env(BASE_SDC_FILE) "$script_dir/project.sdc"

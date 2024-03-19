@@ -82,4 +82,4 @@ set ::env(SYNTH_STRATEGY) "AREA 0"
 set ::env(SYNTH_NO_FLAT) 0
 set ::env(SYNTH_FLAT_TOP) 1
 set ::env(CLOCK_PORT) "ui_in\\\[0\\\]"
-set ::env(BASE_SDC_FILE) "$script_dir/project.sdc"
+set ::env(BASE_SDC_FILE) "project.sdc"

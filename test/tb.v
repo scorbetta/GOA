@@ -58,7 +58,7 @@ module tb
     input wire  rst_n
 );
 
-    SCORBETTA_GOA DUT (
+    tt_um_scorbetta_goa DUT (
 `ifdef GL_TEST
         .VPWR       (1'b1),
         .VGND       (1'b0),

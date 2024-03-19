@@ -11,7 +11,7 @@ project:
   tiles: "1x1"
 
   # Your top module name must start with "tt_um_". Make it unique by including your github username:
-  top_module:  "scorbetta_goa"
+  top_module:  "tt_um_scorbetta_goa"
   
   # List your project's source files here. Source files must be in ./src and you must list each source file separately, one per line:
   source_files:        
@@ -34,7 +34,7 @@ project:
     - "NEURON_CONTROL_ENGINE.v"
     - "NEURON.v"
     - "NEURON_WRAPPER.v"
-    - "SCORBETTA_GOA.v"
+    - "tt_um_scorbetta_goa.v"
 
 # The pinout of your project. Leave unused pins blank. DO NOT delete or add any pins.
 pinout:

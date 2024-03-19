@@ -18,7 +18,7 @@
 `define UO_OUT_READY            3
 `define UO_OUT_DONE             4
 
-module SCORBETTA_GOA
+module tt_um_scorbetta_goa
 (
     input wire [7:0]    ui_in, // Dedicated inputs
     output wire [7:0]   uo_out, // Dedicated outputs

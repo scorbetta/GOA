@@ -21,9 +21,12 @@ endif
 
 default:
 	pip3 install fxpmath
-	`which iverilog` -o sim_build/rtl/sim.vvp $(IVERILOG_ARGS) -f sim_build/rtl/cmds.f -g2012 $(VERILOG_SOURCES)
-	MODULE=test TESTCASE= TOPLEVEL=tb TOPLEVEL_LANG=verilog `which vvp` -M `python3 -m site --user-site`/cocotb/libs -m libcocotbvpi_icarus sim_build/rtl/sim.vvp 
+	rm -fR sim_build
+	mkdir sim_build
+	`which iverilog` -o sim_build/sim.vvp $(IVERILOG_ARGS) -g2012 $(VERILOG_SOURCES)
+	MODULE=test TESTCASE= TOPLEVEL=tb TOPLEVEL_LANG=verilog `which vvp` -M `python3 -m site --user-site`/cocotb/libs -m libcocotbvpi_icarus sim_build/sim.vvp
 
 clean:
 	find . -name __pycache__ -exec rm -fR {} +
 	rm -f results.xml
+	rm -fR sim_build

@@ -1,6 +1,6 @@
 .PHONY: clean
 
-VERILOG_SOURCES = 
+VERILOG_SOURCES = tb.v
 SRC_DIR = $(PWD)/../src
 IVERILOG_ARGS =
 COCOTB_PREFIX = $(shell cocotb-config --prefix)
@@ -8,7 +8,6 @@ COCOTB_PREFIX = $(shell cocotb-config --prefix)
 ifneq ($(GATES),yes)
 
 VERILOG_SOURCES += $(shell ls $(SRC_DIR)/*.v | tr '\n' ' ' )
-VERILOG_SOURCES += tb.v
 IVERILOG_ARGS += -DCOCOTB_SIM=1 -s tb -I$(SRC_DIR) -g2012
 
 else
@@ -16,7 +15,7 @@ else
 VERILOG_SOURCES += $(PDK_ROOT)/sky130A/libs.ref/sky130_fd_sc_hd/verilog/primitives.v
 VERILOG_SOURCES += $(PDK_ROOT)/sky130A/libs.ref/sky130_fd_sc_hd/verilog/sky130_fd_sc_hd.v
 VERILOG_SOURCES += $(PWD)/gate_level_netlist.v
-IVERILOG_ARGS += -DFUNCTIONAL -DSIM -DUSE_POWER_PINS -DUNIT_DELAY=\#1
+IVERILOG_ARGS += -Ttyp -DFUNCTIONAL -DSIM -DUNIT_DELAY=\#1
 
 endif
 

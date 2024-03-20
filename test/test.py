@@ -43,9 +43,12 @@ async def test(dut):
     dut.rst_n.value = 0
     dut.ui_in_1.value = 0 ;#UI_IN_RESET
     dut.ui_in_2.value = 1 ;#UI_IN_SCI_CSN
+    dut.ui_in_3.value = 0 ;#UI_IN_SCI_REQ
     dut.ui_in_4.value = 0 ;#UI_IN_LOAD_IN
+    dut.ui_in_5.value = 0 ;#UI_IN_LOAD_VALUE_IN
     dut.ui_in_6.value = 0 ;#UI_IN_SHIFT_OUT
     dut.ui_in_7.value = 0 ;#UI_IN_START
+    dut.ena.value = 0
 
     # Reset procedure
     for cycle in range(4):
@@ -54,8 +57,18 @@ async def test(dut):
     dut.ui_in_1.value = 1 ;#UI_IN_RESET
 
     # Shim delay
+    for cycle in range(10):
+        await RisingEdge(dut.clk)
+
+    # Enable design
+    dut.ena.value = 1
+
+    # Shim delay
     for cycle in range(4):
         await RisingEdge(dut.clk)
+
+    # Formally, we need to wait for neuron to be ready
+    await wait_for_value(dut.ui_in_0, dut.uo_out_3, 1)
 
     # From this point on, we use the clock generated from the FPGA as reference. Detailed interface
     # mapping through top-level GPIOs
@@ -146,16 +159,8 @@ async def test(dut):
         for _ in range(2):
             await RisingEdge(dut.ui_in_0)
 
-        # Verify accumulator
-        threshold = 0.10
-        dut_result = Fxp(val=f'0b{str(dut.DUT.NEURON_WRAPPER.NEURON.biased_acc_out.value.binstr)}', signed=True, n_word=width, n_frac=frac_bits, config=fxp_get_config())
-        abs_err = fxp_abs_err(golden_model_acc, dut_result)
-        quant_err = float(abs_err) / float(fxp_lsb) / fxp_quants
-        #assert(quant_err <= threshold),print(f'Results for ACC differ more than {threshold*100}% LSBs: dut_result={dut_result},golden_result={golden_model_acc},abs_err={abs_err},quant_error={quant_err}')
-        if quant_err > threshold:
-            print(f'warn: Test #{test} - Results for ACC differ more than {threshold*100}% LSBs: dut_result={dut_result},golden_result={golden_model_acc},abs_err={abs_err},quant_error={quant_err}')
-
         # Verify output
+        threshold = 0.10
         dut_result_bin = ''
         dut.ui_in_6.value = 1
         for bdx in reversed(range(8)):

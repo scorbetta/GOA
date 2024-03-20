@@ -3,6 +3,7 @@
 VERILOG_SOURCES = 
 SRC_DIR = $(PWD)/../src
 IVERILOG_ARGS =
+COCOTB_PREFIX = $(shell cocotb-config --prefix)
 
 ifneq ($(GATES),yes)
 
@@ -23,11 +24,8 @@ default:
 	pip3 install fxpmath
 	rm -fR sim_build
 	mkdir sim_build
-	update_db
-	locate libcocotbvpi_icarus.vpi
-	python3 -m site --user-site
 	`which iverilog` -o sim_build/sim.vvp $(IVERILOG_ARGS) -g2012 $(VERILOG_SOURCES)
-	MODULE=test TESTCASE= TOPLEVEL=tb TOPLEVEL_LANG=verilog `which vvp` -M `python3 -m site --user-site`/cocotb/libs -m libcocotbvpi_icarus sim_build/sim.vvp
+	MODULE=test TESTCASE= TOPLEVEL=tb TOPLEVEL_LANG=verilog `which vvp` -M $(COCOTB_PREFIX)/cocotb/libs -m libcocotbvpi_icarus sim_build/sim.vvp
 
 clean:
 	find . -name __pycache__ -exec rm -fR {} +

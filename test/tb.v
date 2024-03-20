@@ -59,6 +59,10 @@ module tb
 );
 
     tt_um_scorbetta_goa DUT (
+`ifdef GL_TEST
+        .VPWR       (1'b1),
+        .VGND       (1'b0),
+`endif
         .ui_in      ({ ui_in_7, ui_in_6, ui_in_5, ui_in_4, ui_in_3, ui_in_2, ui_in_1, ui_in_0 }),
         .uo_out     ({ uo_out_7, uo_out_6, uo_out_5, uo_out_4, uo_out_3, uo_out_2, uo_out_1, uo_out_0 }),
         .uio_in     ({ uio_in_7, uio_in_6, uio_in_5, uio_in_4, uio_in_3, uio_in_2, uio_in_1, uio_in_0 }),

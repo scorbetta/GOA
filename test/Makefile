@@ -27,6 +27,6 @@ default:
 	MODULE=test TESTCASE= TOPLEVEL=tb TOPLEVEL_LANG=verilog `which vvp` -M $(COCOTB_PREFIX)/cocotb/libs -m libcocotbvpi_icarus sim_build/sim.vvp
 
 clean:
-	find . -name __pycache__ -exec rm -fR {} +
+	find .. -name __pycache__ -exec rm -fR {} +
 	rm -f results.xml
 	rm -fR sim_build

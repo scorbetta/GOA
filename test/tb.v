@@ -1,7 +1,7 @@
 `timescale 1ns/100ps
 `default_nettype none
 
-// The module wraps  project  to flatten its ports. This is required to work around some open-source
+// The module wraps project to flatten its ports. This is required to work around some open-source
 // tools limitations
 module tb
 (
@@ -73,10 +73,10 @@ module tb
         .rst_n      (rst_n)
     );
 
-    initial begin
-        $dumpfile("dump.vcd");
-        $dumpvars(0, tb);
-    end
+    //@DUMPinitial begin
+    //@DUMP    $dumpfile("dump.vcd");
+    //@DUMP    $dumpvars(0, tb);
+    //@DUMPend
 endmodule
 
 `default_nettype wire

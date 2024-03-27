@@ -3,9 +3,12 @@
 `ifndef __REGPOOL_VH__
 `define __REGPOOL_VH__
 
-`define WEIGHT_0_OFFSET 2'h0
-`define WEIGHT_1_OFFSET 2'h1
-`define BIAS_OFFSET 2'h2
-`define RESULT_OFFSET 2'h3
+`define WEIGHT_0_OFFSET 3'h0
+`define WEIGHT_1_OFFSET 3'h1
+`define BIAS_OFFSET 3'h2
+`define VALUE_IN_OFFSET 3'h3
+`define CTRL_OFFSET 3'h4
+`define STATUS_OFFSET 3'h5
+`define RESULT_OFFSET 3'h6
 
 `endif /* __REGPOOL_VH__ */

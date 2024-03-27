@@ -9,25 +9,15 @@ module NEURON_WRAPPER
     input wire  SCI_CSN,
     input wire  SCI_REQ,
     output wire SCI_RESP,
-    output wire SCI_ACK,
-    // Load data buffer
-    input wire  LOAD_IN,
-    input wire  LOAD_VALUE_IN,
-    // Result data buffer
-    input wire  SHIFT_OUT,
-    output wire SHIFT_VALUE_OUT,
-    // Trigger interface
-    output wire READY,
-    input wire  START,
-    output wire DONE
+    output wire SCI_ACK
 );
 
     wire                regpool_wreq;
-    wire [1:0]          regpool_waddr;
+    wire [2:0]          regpool_waddr;
     wire [7:0]          regpool_wdata;
     wire                regpool_wack;
     wire                regpool_rreq;
-    wire [1:0]          regpool_raddr;
+    wire [2:0]          regpool_raddr;
     wire [7:0]          regpool_rdata;
     wire                regpool_rvalid;
     wire [2*8-1:0]      weights;
@@ -35,19 +25,16 @@ module NEURON_WRAPPER
     wire signed [7:0]   value_in;
     wire signed [7:0]   value_out;
     wire                valid_out;
-
-    SIPO_BUFFER #(
-        .DEPTH  (8)
-    )
-    VALUE_IN_BUFFER (
-        .CLK    (CLK),
-        .SIN    (LOAD_VALUE_IN),
-        .EN     (LOAD_IN),
-        .POUT   (value_in)
-    );
+    wire                valid_out_latch;
+    wire [7:0]          ctrl;
+    wire [7:0]          status;
+    wire                ready;
+    wire                start;
+    wire                soft_reset;
+    wire                rstn_i;
 
     SCI_SLAVE #(
-        .ADDR_WIDTH (2),
+        .ADDR_WIDTH (3),
         .DATA_WIDTH (8)
     )
     SCI_SLAVE (
@@ -81,7 +68,22 @@ module NEURON_WRAPPER
         .HWIF_OUT_WEIGHT_0  (weights[0*8+:8]),
         .HWIF_OUT_WEIGHT_1  (weights[1*8+:8]),
         .HWIF_OUT_BIAS      (bias),
+        .HWIF_OUT_VALUE_IN  (value_in),
+        .HWIF_OUT_CTRL      (ctrl),
+        .HWIF_IN_STATUS     (status),
         .HWIF_IN_RESULT     (value_out)
+    );
+
+    // Software controlled reset is active high, while hardware reset is active low. Internal resets
+    // are all active-low signals
+    assign soft_reset   = ctrl[0];
+    assign rstn_i       = RSTN & ~soft_reset;
+
+    EDGE_DETECTOR START_EDGE (
+        .CLK            (CLK),
+        .SAMPLE_IN      (ctrl[1]),
+        .RISE_EDGE_OUT  (start),
+        .FALL_EDGE_OUT  () // Unused
     );
 
     NEURON #(
@@ -91,31 +93,36 @@ module NEURON_WRAPPER
     )
     NEURON (
         .CLK        (CLK),
-        .RSTN       (RSTN),
+        .RSTN       (rstn_i),
         .WEIGHTS    (weights),
         .BIAS       (bias),
-        .READY      (READY),
+        .READY      (ready),
         .VALUE_IN   (value_in),
-        .VALID_IN   (START),
+        .VALID_IN   (start),
         .VALUE_OUT  (value_out),
         .VALID_OUT  (valid_out),
         .OVERFLOW   () // Unused
     );
 
-    PISO_BUFFER #(
-        .DEPTH  (8)
+    // Latches valid solution
+    DELTA_REG #(
+        .DATA_WIDTH (1),
+        .HAS_RESET  (1)
     )
-    VALUE_OUT_BUFFER (
-        .CLK        (CLK),
-        .PIN        (value_out),
-        .LOAD_IN    (valid_out),
-        .SHIFT_OUT  (SHIFT_OUT),
-        .SOUT       (SHIFT_VALUE_OUT)
+    VALID_SOLUTION_LATCH (
+        .CLK            (CLK),
+        .RSTN           (rstn_i),
+        .READ_EVENT     (start),
+        .VALUE_IN       (valid_out),
+        .VALUE_CHANGE   (valid_out_latch),
+        .VALUE_OUT      () // Unused
     );
 
-
-    // Pinout
-    assign DONE = valid_out;
+    assign status = {
+        6'd0,               // [7:2]
+        valid_out_latch,    // [1:1]
+        ready               // [0:0]
+    };
 endmodule
 
 `default_nettype wire

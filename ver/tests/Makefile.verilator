@@ -1,0 +1,30 @@
+# COCOTB configuration
+TOPLEVEL_LANG = verilog
+SIM ?= verilator
+
+# Do *not* modify this line!
+VERILOG_SOURCES = $(shell grep -E "\.v$$" sources.list )
+
+# Include dirs
+VERILOG_INCLUDE_DIRS=../../src
+
+# Miscellanea
+RANDOM_SEED ?= $( date +%N )
+SEED ?= $(RANDOM_SEED)
+WAVES ?= 0
+TOPLEVEL ?= tb
+
+# Disable warnings
+override EXTRA_ARGS += -Wno-WIDTHEXPAND -Wno-WIDTHTRUNC -Wno-CASEINCOMPLETE --timing --timescale 1ns/100ps
+
+# Optional waveforms
+ifeq ($(WAVES),1)
+override EXTRA_ARGS += --trace-fst --trace-structs
+endif
+
+# Include COCOTB Makefiles
+include $(shell cocotb-config --makefiles)/Makefile.sim
+
+# User-defined clean all
+purge: clean
+	find . -name __pycache__ -exec rm -fR {} +

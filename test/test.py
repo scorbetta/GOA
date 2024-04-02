@@ -267,7 +267,7 @@ async def test_dbug_mux(dut):
     #      uo_out | 2’b00         | 2'b01       | 2’b10           | 2’b11
     #   ---------------------------------------------------------------------
     #   uo_out[0] | ena           | loopback    | start           | chip_id[3]
-    #   uo_out[1] | overflow      | ready       | valid_out       | chip_id[2]
+    #   uo_out[1] | clk           | ready       | valid_out       | chip_id[2]
     #   uo_out[2] | soft_reset    | WREQ        | valid_out_latch | chip_id[1]
     #   uo_out[3] | open_req      | WACK        | mul_start       | chip_id[0]
     #   uo_out[4] | addr_count_en | RREQ        | mul_done        | mul_overflow
@@ -280,6 +280,14 @@ async def test_dbug_mux(dut):
     dut.ui_in_6.value = 0
     await RisingEdge(dut.ui_in_0)
     assert(dut.uo_out_0.value == 1),print(f'Unexpected ena: {dut.uo_out_0.value} (expected: 1)')
+
+    # Check clk mirroring
+    dut.ui_in_7.value = 0
+    dut.ui_in_6.value = 0
+    for _ in range(100):
+        random_wait_ns = random.randint(1, rp2040_clock_ns)
+        await Timer(random_wait_ns, 'ns')
+        assert(dut.clk.value == dut.uo_out_1.value),print(f'Unexpected clock mirroring: {dut.uo_out_1.value} (expected: {dut.clk.value})')
 
     # Check soft_reset
     dut.ui_in_7.value = 0

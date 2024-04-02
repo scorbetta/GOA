@@ -12,11 +12,11 @@ module REGPOOL (
     input wire RSTN,
     // Register interface
     input wire WREQ,
-    input wire [2:0] WADDR,
+    input wire [3:0] WADDR,
     input wire [7:0] WDATA,
     output wire WACK,
     input wire RREQ,
-    input wire [2:0] RADDR,
+    input wire [3:0] RADDR,
     output wire [7:0] RDATA,
     output wire RVALID,
     // Register bundles
@@ -26,7 +26,10 @@ module REGPOOL (
     output wire [7:0] HWIF_OUT_VALUE_IN,
     output wire [7:0] HWIF_OUT_CTRL,
     input wire [7:0] HWIF_IN_STATUS,
-    input wire [7:0] HWIF_IN_RESULT
+    input wire [7:0] HWIF_IN_RESULT,
+    input wire [7:0] HWIF_IN_MULT_RESULT,
+    input wire [7:0] HWIF_IN_ADD_RESULT,
+    input wire [7:0] HWIF_IN_BIAS_ADD_RESULT
 );
 
     reg rvalid;
@@ -140,6 +143,48 @@ module REGPOOL (
         .VALUE_OUT  (result_value_out)
     );
         
+    // MULT_RESULT: Fixed-point multiplication result
+    wire [7:0] mult_result_value_in;
+    wire [7:0] mult_result_value_out;
+    RO_REG #(
+        .DATA_WIDTH (8),
+        .HAS_RESET  (0)
+    )
+    MULT_RESULT_REG (
+        .CLK        (CLK),
+        .RSTN       (RSTN),
+        .VALUE_IN   (mult_result_value_in),
+        .VALUE_OUT  (mult_result_value_out)
+    );
+        
+    // ADD_RESULT: Fixed-point addition result
+    wire [7:0] add_result_value_in;
+    wire [7:0] add_result_value_out;
+    RO_REG #(
+        .DATA_WIDTH (8),
+        .HAS_RESET  (0)
+    )
+    ADD_RESULT_REG (
+        .CLK        (CLK),
+        .RSTN       (RSTN),
+        .VALUE_IN   (add_result_value_in),
+        .VALUE_OUT  (add_result_value_out)
+    );
+        
+    // BIAS_ADD_RESULT: Fixed-point addition w/ bias result
+    wire [7:0] bias_add_result_value_in;
+    wire [7:0] bias_add_result_value_out;
+    RO_REG #(
+        .DATA_WIDTH (8),
+        .HAS_RESET  (0)
+    )
+    BIAS_ADD_RESULT_REG (
+        .CLK        (CLK),
+        .RSTN       (RSTN),
+        .VALUE_IN   (bias_add_result_value_in),
+        .VALUE_OUT  (bias_add_result_value_out)
+    );
+        
     // Write decoder
     always @(posedge CLK) begin
         wack <= 1'b0;
@@ -177,6 +222,9 @@ module REGPOOL (
             `CTRL_OFFSET : begin rdata = ctrl_value_out; end
             `STATUS_OFFSET : begin rdata = status_value_out; end
             `RESULT_OFFSET : begin rdata = result_value_out; end
+            `MULT_RESULT_OFFSET : begin rdata = mult_result_value_out; end
+            `ADD_RESULT_OFFSET : begin rdata = add_result_value_out; end
+            `BIAS_ADD_RESULT_OFFSET : begin rdata = bias_add_result_value_out; end
             default : begin rdata = {8{1'b1}}; end
         endcase
     end
@@ -196,6 +244,9 @@ module REGPOOL (
     assign HWIF_OUT_CTRL = ctrl_value_out;
     assign status_value_in = HWIF_IN_STATUS;
     assign result_value_in = HWIF_IN_RESULT;
+    assign mult_result_value_in = HWIF_IN_MULT_RESULT;
+    assign add_result_value_in = HWIF_IN_ADD_RESULT;
+    assign bias_add_result_value_in = HWIF_IN_BIAS_ADD_RESULT;
 endmodule
 
 `default_nettype wire

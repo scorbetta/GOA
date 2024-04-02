@@ -20,7 +20,14 @@ module SCI_SLAVE #(
     output wire                     NI_RREQ,
     output wire [ADDR_WIDTH-1:0]    NI_RADDR,
     input wire [DATA_WIDTH-1:0]     NI_RDATA,
-    input wire                      NI_RVALID
+    input wire                      NI_RVALID,
+    // Debug signals
+    output wire                     DBUG_NI_RREQ,
+    output wire                     DBUG_NI_WREQ,
+    output wire                     DBUG_DATA_COUNT_EN,
+    output wire                     DBUG_ADDR_COUNT_EN,
+    output wire                     DBUG_OPEN_REQ,
+    output wire                     DBUG_RDATA_SHIFT
 );
 
     localparam IDLE             = 3'b000;
@@ -34,9 +41,6 @@ module SCI_SLAVE #(
     reg                             sci_csn;
     wire                            open_req;
     wire                            count_rstn;
-    wire                            sci_resp_enable;
-    wire                            sci_ack_enable;
-    wire                            sci_ack;
     reg                             wnr;
     wire                            addr_count_en;
     wire [$clog2(ADDR_WIDTH)-1:0]   addr_count;
@@ -219,6 +223,14 @@ module SCI_SLAVE #(
     assign NI_RREQ  = ni_rreq;
     assign NI_RADDR = reg_addr;
     assign SCI_ACK  = (((curr_state == NI_WDATA_PHASE) && NI_WACK) || rdata_shift) ? 1'b1 : 1'b0;
+
+    // Debug signals
+    assign DBUG_NI_RREQ         = ni_rreq;
+    assign DBUG_NI_WREQ         = ni_wreq;
+    assign DBUG_DATA_COUNT_EN   = data_count_en;
+    assign DBUG_ADDR_COUNT_EN   = addr_count_en;
+    assign DBUG_OPEN_REQ        = open_req;
+    assign DBUG_RDATA_SHIFT     = rdata_shift;
 endmodule
 
 `default_nettype wire

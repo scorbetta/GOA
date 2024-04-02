@@ -22,7 +22,20 @@ module NEURON #(
     // Output path
     output wire signed [WIDTH-1:0]              VALUE_OUT,
     output wire                                 VALID_OUT,
-    output wire                                 OVERFLOW
+    output wire                                 OVERFLOW,
+    output wire signed [WIDTH-1:0]              MULT_RESULT,
+    output wire signed [WIDTH-1:0]              ADD_RESULT,
+    output wire signed [WIDTH-1:0]              ADD_BIAS_RESULT,
+    // Debug signals
+    output wire                                 DBUG_ACT_DONE,
+    output wire                                 DBUG_BIAS_ADD_DONE,
+    output wire                                 DBUG_ADD_DONE,
+    output wire                                 DBUG_MUL_DONE,
+    output wire                                 DBUG_MUL_START,
+    output wire                                 DBUG_ACT_OVERFLOW,
+    output wire                                 DBUG_BIAS_ADD_OVERFLOW,
+    output wire                                 DBUG_ADD_OVERFLOW,
+    output wire                                 DBUG_MUL_OVERFLOW
 );
 
     wire                    mul_overflow;
@@ -142,10 +155,24 @@ module NEURON #(
     end
 
     // Pinout
-    assign READY        = ~busy;
-    assign OVERFLOW     = overflow;
-    assign VALID_OUT    = act_done;
-    assign VALUE_OUT    = act_fun_out;
+    assign READY            = ~busy;
+    assign OVERFLOW         = overflow;
+    assign VALID_OUT        = act_done;
+    assign VALUE_OUT        = act_fun_out;
+    assign MULT_RESULT      = mul_value_out;
+    assign ADD_RESULT       = acc_out;
+    assign ADD_BIAS_RESULT  = biased_acc_out;
+
+    // Debug signals
+    assign DBUG_ACT_DONE            = act_done;
+    assign DBUG_BIAS_ADD_DONE       = bias_add_done;
+    assign DBUG_ADD_DONE            = add_done;
+    assign DBUG_MUL_DONE            = mul_done;
+    assign DBUG_MUL_START           = mul_start;
+    assign DBUG_ACT_OVERFLOW        = act_overflow;
+    assign DBUG_BIAS_ADD_OVERFLOW   = bias_add_overflow;
+    assign DBUG_ADD_OVERFLOW        = add_overflow;
+    assign DBUG_MUL_OVERFLOW        = mul_overflow;
 endmodule
 
 `default_nettype wire

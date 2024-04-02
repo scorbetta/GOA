@@ -19,12 +19,14 @@ IVERILOG_ARGS += -Ttyp -DUSE_POWER_PINS -DGL_TEST -DFUNCTIONAL -DSIM -DUNIT_DELA
 
 endif
 
-default:
+default: test_top test_dbug_mux test_network_emulation
+
+test_%:
 	pip3 install fxpmath
 	rm -fR sim_build
 	mkdir sim_build
-	`which iverilog` -o sim_build/sim.vvp $(IVERILOG_ARGS) -g2012 $(VERILOG_SOURCES)
-	MODULE=test TESTCASE= TOPLEVEL=tb TOPLEVEL_LANG=verilog `which vvp` -M $(COCOTB_PREFIX)/cocotb/libs -m libcocotbvpi_icarus sim_build/sim.vvp
+	`which iverilog` -o sim_build/sim.vvp $(IVERILOG_ARGS) $(VERILOG_SOURCES)
+	MODULE=test TESTCASE=$@ TOPLEVEL=tb TOPLEVEL_LANG=verilog `which vvp` -M $(COCOTB_PREFIX)/cocotb/libs -m libcocotbvpi_icarus sim_build/sim.vvp
 
 clean:
 	find .. -name __pycache__ -exec rm -fR {} +

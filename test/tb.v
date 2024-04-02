@@ -73,10 +73,10 @@ module tb
         .rst_n      (rst_n)
     );
 
-    //@DUMPinitial begin
-    //@DUMP    $dumpfile("dump.vcd");
-    //@DUMP    $dumpvars(0, tb);
-    //@DUMPend
+    //@DUMP_VCDinitial begin
+    //@DUMP_VCD    $dumpfile("dump.vcd");
+    //@DUMP_VCD    $dumpvars(0, tb);
+    //@DUMP_VCDend
 endmodule
 
 `default_nettype wire

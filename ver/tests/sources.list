@@ -2,7 +2,6 @@
 ../../src/D_FF_EN.v
 ../../src/EDGE_DETECTOR.v
 ../../src/FIXED_POINT_ABS.v
-../../src/FIXED_POINT_ACC.v
 ../../src/FIXED_POINT_ACT_FUN.v
 ../../src/FIXED_POINT_ADD.v
 ../../src/FIXED_POINT_CHANGE_SIGN.v

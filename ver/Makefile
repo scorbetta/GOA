@@ -8,6 +8,7 @@ EXTRA_ARGS ?= ""
 all: test_sci_slave test_neuron_wrapper test_regpool
 
 test_%:
+	$(MAKE) -C tests -f Makefile.verilator purge
 	$(eval top := $(shell echo $@ | cut -d '_' -f 2- | tr '[:lower:]' '[:upper:]'))
 	$(MAKE) -C tests -f Makefile.verilator TOPLEVEL=$(top) MODULE=$@ WAVES=$(WAVES)
 
